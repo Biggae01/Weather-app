@@ -18,7 +18,6 @@ class WeatherApp {
         this.cacheDOMElements();
         this.attachEventListeners();
         this.renderRecentSearches();
-        this.checkAPIKey();
     }
 
     cacheDOMElements() {
@@ -69,25 +68,11 @@ class WeatherApp {
         this.unitToggle.addEventListener('click', () => this.toggleUnit());
     }
 
-    checkAPIKey() {
-        if (this.API_KEY === 'YOUR_API_KEY_HERE') {
-            this.showError(
-                '⚠️ Please add your OpenWeatherMap API key in weather.js! ' +
-                'Get one free at: https://openweathermap.org/api'
-            );
-        }
-    }
-
     async handleSearch() {
         const city = this.cityInput.value.trim();
         
         if (!city) {
             this.showError('Please enter a city name');
-            return;
-        }
-
-        if (this.API_KEY === 'YOUR_API_KEY_HERE') {
-            this.showError('Please add your API key first!');
             return;
         }
 
@@ -172,11 +157,6 @@ class WeatherApp {
     getCurrentLocation() {
         if (!navigator.geolocation) {
             this.showError('Geolocation is not supported by your browser');
-            return;
-        }
-
-        if (this.API_KEY === 'YOUR_API_KEY_HERE') {
-            this.showError('Please add your API key first!');
             return;
         }
 

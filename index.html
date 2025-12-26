@@ -3,8 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather Dashboard - Real-time Weather</title>
+    <meta name="description" content="Professional weather dashboard providing real-time weather data and 5-day forecasts for cities worldwide">
+    <meta name="author" content="Edwin Mwansa">
+    <title>Weather Dashboard - Real-time Weather Information</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌤️</text></svg>">
+    
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Stylesheet -->
     <link rel="stylesheet" href="css/weather.css">
 </head>
 <body>
@@ -27,12 +36,13 @@
                     class="search-input" 
                     placeholder="Enter city name (e.g., Lusaka, Kabwe, London, Tokyo)"
                     maxlength="50"
+                    aria-label="City name input"
                 >
-                <button id="searchBtn" class="search-btn">
+                <button id="searchBtn" class="search-btn" aria-label="Search weather">
                     <i class="fas fa-search"></i>
                     <span>Search</span>
                 </button>
-                <button id="locationBtn" class="location-btn" title="Use my location">
+                <button id="locationBtn" class="location-btn" title="Use my location" aria-label="Use current location">
                     <i class="fas fa-location-crosshairs"></i>
                 </button>
             </div>
@@ -45,13 +55,13 @@
         </section>
 
         <!-- Loading Spinner -->
-        <div id="loading" class="loading hidden">
+        <div id="loading" class="loading hidden" role="status" aria-live="polite">
             <div class="spinner"></div>
             <p>Loading weather data...</p>
         </div>
 
         <!-- Error Message -->
-        <div id="error" class="error-message hidden">
+        <div id="error" class="error-message hidden" role="alert" aria-live="assertive">
             <i class="fas fa-exclamation-triangle error-icon"></i>
             <p id="errorText"></p>
         </div>
@@ -65,7 +75,7 @@
                         <h2 id="cityName" class="city-name"></h2>
                         <p id="weatherDate" class="weather-date"></p>
                     </div>
-                    <button id="unitToggle" class="unit-toggle">°C</button>
+                    <button id="unitToggle" class="unit-toggle" aria-label="Toggle temperature unit">°C</button>
                 </div>
 
                 <div class="weather-main">
@@ -162,10 +172,11 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <p>Weather data provided by <a href="https://openweathermap.org/" target="_blank">OpenWeatherMap</a></p>
-        <p>Created by <a href="https://github.com/Biggae01" target="_blank">Edwin Mwansa</a></p>
+        <p>Weather data provided by <a href="https://openweathermap.org/" target="_blank" rel="noopener noreferrer">OpenWeatherMap</a></p>
+        <p>Created by <a href="https://github.com/Biggae01" target="_blank" rel="noopener noreferrer">Edwin Mwansa</a></p>
     </footer>
 
+    <!-- JavaScript -->
     <script src="js/weather.js"></script>
 </body>
 </html>
