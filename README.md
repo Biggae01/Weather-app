@@ -28,7 +28,7 @@ Weather Dashboard is a clean, responsive web application built with vanilla Java
 
 ## Live Demo
 
-[View Live Demo](#) <!-- Add your deployment link -->
+[View Live Demo](https://weather-dashapp.netlify.app/) <!-- Add your deployment link -->
 
 ## Technology Stack
 
