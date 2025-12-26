@@ -2,7 +2,7 @@
 
 A professional, real-time weather application providing current conditions and 5-day forecasts for cities worldwide.
 
-![Weather Dashboard](screenshot.png) <!-- Add your screenshot here -->
+![Weather Dashboard](Screenshots\screenshot.png) 
 
 ## Overview
 
@@ -104,7 +104,7 @@ weather-dashboard/
 ├── js/
 │   └── weather.js         # Application logic and API integration
 ├── README.md              # Project documentation
-└── screenshot.png         # Application preview (optional)
+└── screenshot.png         # Application preview
 ```
 
 ## API Reference
