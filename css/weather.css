@@ -5,6 +5,7 @@
     box-sizing: border-box;
 }
 
+/* LIGHT MODE COLORS (Default) */
 :root {
     --primary: #2563eb;
     --primary-dark: #1e40af;
@@ -24,12 +25,30 @@
     --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
 }
 
+/* DARK MODE COLORS */
+body.dark-mode {
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --primary-light: #1e3a8a;
+    --secondary: #94a3b8;
+    --background: #0f172a;
+    --surface: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-tertiary: #94a3b8;
+    --border: #334155;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     background: var(--background);
     min-height: 100vh;
     color: var(--text-primary);
     line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
@@ -38,9 +57,16 @@ body {
     padding: 2rem 1rem;
 }
 
-/* Header */
+/* Header with Dark Mode Toggle */
 .header {
     margin-bottom: 2rem;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
 }
 
 .app-title {
@@ -60,6 +86,35 @@ body {
 .app-subtitle {
     font-size: 0.95rem;
     color: var(--text-secondary);
+}
+
+/* Dark Mode Toggle Button */
+.dark-mode-toggle {
+    padding: 0.75rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dark-mode-toggle:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    transform: scale(1.05);
+}
+
+/* When in dark mode, show sun icon */
+body.dark-mode .dark-mode-toggle i::before {
+    content: "\f185"; /* Sun icon */
 }
 
 /* Search Section */
@@ -83,7 +138,8 @@ body {
     border: 1px solid var(--border);
     border-radius: 0.5rem;
     font-size: 0.95rem;
-    background: var(--surface);
+    background: var(--background);
+    color: var(--text-primary);
     transition: all 0.2s;
 }
 
@@ -123,10 +179,6 @@ body {
 
 .location-btn:hover {
     background: var(--background);
-}
-
-.search-btn:active, .location-btn:active {
-    transform: scale(0.98);
 }
 
 /* Recent Searches */
@@ -195,7 +247,7 @@ body {
 }
 
 .error-message {
-    background: #fef2f2;
+    background: var(--surface);
     border-left: 4px solid var(--danger);
     padding: 1rem 1.25rem;
     border-radius: 0.5rem;
@@ -210,7 +262,7 @@ body {
 }
 
 .error-message p {
-    color: #991b1b;
+    color: var(--danger);
     font-size: 0.95rem;
 }
 
@@ -362,6 +414,90 @@ body {
     font-weight: 600;
 }
 
+/* NEW: Hourly Forecast Section */
+.hourly-section {
+    background: var(--surface);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 1.5rem;
+}
+
+.hourly-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+.hourly-grid {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+/* Scrollbar styling */
+.hourly-grid::-webkit-scrollbar {
+    height: 8px;
+}
+
+.hourly-grid::-webkit-scrollbar-track {
+    background: var(--background);
+    border-radius: 4px;
+}
+
+.hourly-grid::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+
+.hourly-grid::-webkit-scrollbar-thumb:hover {
+    background: var(--text-tertiary);
+}
+
+.hourly-card {
+    min-width: 100px;
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 1rem 0.75rem;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.hourly-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+    border-color: var(--primary);
+}
+
+.hourly-time {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.hourly-icon {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 0.5rem;
+}
+
+.hourly-temp {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.hourly-desc {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: capitalize;
+}
+
 /* Forecast Section */
 .forecast-section {
     background: var(--surface);
@@ -510,6 +646,11 @@ body {
         padding: 1rem;
     }
 
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
     .app-title {
         font-size: 1.5rem;
     }
@@ -537,6 +678,10 @@ body {
 
     .forecast-grid {
         grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+
+    .hourly-card {
+        min-width: 90px;
     }
 }
 

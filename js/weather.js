@@ -1,40 +1,44 @@
-// Weather Dashboard Application
+// Weather Jit Application Enhanced Features v2
 class WeatherApp {
     constructor() {
-        
+        // API Configuration
         this.API_KEY = 'd55afc9392f3bc3245713d6ec5ee126a'; 
         this.BASE_URL = 'https://api.openweathermap.org/data/2.5';
         
-        // State
-        this.currentUnit = 'metric'; // 'metric' for Celsius, 'imperial' for Fahrenheit
-        this.currentWeatherData = null;
-        this.recentSearches = this.loadRecentSearches();
+        // App State (store current information)
+        this.currentUnit = 'metric'; 
+        this.currentWeatherData = null; 
+        this.recentSearches = this.loadRecentSearches(); 
+        this.darkMode = this.loadDarkMode(); 
         
-        // Initialize
+        // Initialize app
         this.init();
     }
 
     init() {
+        
         this.cacheDOMElements();
         this.attachEventListeners();
         this.renderRecentSearches();
+        this.applyDarkMode();
     }
 
     cacheDOMElements() {
-        // Input elements
+        // Get all the buttons and inputs from HTML
         this.cityInput = document.getElementById('cityInput');
         this.searchBtn = document.getElementById('searchBtn');
         this.locationBtn = document.getElementById('locationBtn');
         this.unitToggle = document.getElementById('unitToggle');
+        this.darkModeToggle = document.getElementById('darkModeToggle'); // update
         
-        // Display elements
+        // Get display areas
         this.loading = document.getElementById('loading');
         this.error = document.getElementById('error');
         this.errorText = document.getElementById('errorText');
         this.weatherDisplay = document.getElementById('weatherDisplay');
         this.welcomeMessage = document.getElementById('welcomeMessage');
         
-        // Weather info elements
+        // Get weather info display elements
         this.cityName = document.getElementById('cityName');
         this.weatherDate = document.getElementById('weatherDate');
         this.weatherIcon = document.getElementById('weatherIcon');
@@ -47,43 +51,82 @@ class WeatherApp {
         this.pressure = document.getElementById('pressure');
         this.visibility = document.getElementById('visibility');
         this.forecast = document.getElementById('forecast');
+        this.hourlyForecast = document.getElementById('hourlyForecast'); // update
         
-        // Recent searches
+        // Get recent searches list
         this.recentList = document.getElementById('recentList');
     }
 
     attachEventListeners() {
-        // Search button
-        this.searchBtn.addEventListener('click', () => this.handleSearch());
         
-        // Enter key in search input
+        this.searchBtn.addEventListener('click', () => this.handleSearch());
+
         this.cityInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.handleSearch();
         });
-        
-        // Location button
+
         this.locationBtn.addEventListener('click', () => this.getCurrentLocation());
         
-        // Unit toggle
         this.unitToggle.addEventListener('click', () => this.toggleUnit());
+        
+        this.darkModeToggle.addEventListener('click', () => this.toggleDarkMode());
+    }
+
+    toggleDarkMode() {
+        // Switch dark mode on/off
+        this.darkMode = !this.darkMode;
+        
+        // Save preference 
+        this.saveDarkMode();
+        
+        // Apply dark mode
+        this.applyDarkMode();
+    }
+
+    applyDarkMode() {
+        // Get body element
+        const body = document.body;
+        
+        if (this.darkMode) {
+            // Turn ON dark mode
+            body.classList.add('dark-mode');
+        } else {
+            // Turn OFF dark mode
+            body.classList.remove('dark-mode');
+        }
+    }
+
+    saveDarkMode() {
+        // Save to browser storage 
+        localStorage.setItem('weatherDarkMode', JSON.stringify(this.darkMode));
+    }
+
+    loadDarkMode() {
+        // Load from browser storage
+        const saved = localStorage.getItem('weatherDarkMode');
+        return saved ? JSON.parse(saved) : false; // Default to light mode
     }
 
     async handleSearch() {
+        // Get input
         const city = this.cityInput.value.trim();
         
+        // empty input
         if (!city) {
             this.showError('Please enter a city name');
             return;
         }
 
+        // Fetch weather for city
         await this.fetchWeatherByCity(city);
     }
 
     async fetchWeatherByCity(city) {
         try {
+            
             this.showLoading();
             
-            // Fetch current weather
+            // Get current weather
             const weatherResponse = await fetch(
                 `${this.BASE_URL}/weather?q=${city}&appid=${this.API_KEY}&units=${this.currentUnit}`
             );
@@ -94,23 +137,23 @@ class WeatherApp {
             
             const weatherData = await weatherResponse.json();
             
-            // Fetch 5-day forecast
+            // Get 5-day forecast 
             const forecastResponse = await fetch(
                 `${this.BASE_URL}/forecast?q=${city}&appid=${this.API_KEY}&units=${this.currentUnit}`
             );
             
             const forecastData = await forecastResponse.json();
             
-            // Store current weather data
+            // Save the data
             this.currentWeatherData = weatherData;
             
-            // Display weather
+            // Display everything
             this.displayWeather(weatherData, forecastData);
             
-            // Save to recent searches
+            // Add to recent searches
             this.addToRecentSearches(city);
             
-            // Clear input
+            // Clear search box
             this.cityInput.value = '';
             
         } catch (error) {
@@ -124,27 +167,22 @@ class WeatherApp {
         try {
             this.showLoading();
             
-            // Fetch current weather by coordinates
+            // Get weather using GPS coordinates
             const weatherResponse = await fetch(
                 `${this.BASE_URL}/weather?lat=${lat}&lon=${lon}&appid=${this.API_KEY}&units=${this.currentUnit}`
             );
             
             const weatherData = await weatherResponse.json();
             
-            // Fetch forecast
+            // Get forecast
             const forecastResponse = await fetch(
                 `${this.BASE_URL}/forecast?lat=${lat}&lon=${lon}&appid=${this.API_KEY}&units=${this.currentUnit}`
             );
             
             const forecastData = await forecastResponse.json();
             
-            // Store current weather data
             this.currentWeatherData = weatherData;
-            
-            // Display weather
             this.displayWeather(weatherData, forecastData);
-            
-            // Save to recent searches
             this.addToRecentSearches(weatherData.name);
             
         } catch (error) {
@@ -155,6 +193,7 @@ class WeatherApp {
     }
 
     getCurrentLocation() {
+        // Check if browser supports GPS
         if (!navigator.geolocation) {
             this.showError('Geolocation is not supported by your browser');
             return;
@@ -162,12 +201,15 @@ class WeatherApp {
 
         this.showLoading();
         
+        // Ask user's location
         navigator.geolocation.getCurrentPosition(
             (position) => {
+                // Success! Got the location
                 const { latitude, longitude } = position.coords;
                 this.fetchWeatherByCoords(latitude, longitude);
             },
             (error) => {
+                // Failed to get location
                 this.hideLoading();
                 this.showError('Unable to get your location. Please enable location services.');
             }
@@ -175,50 +217,87 @@ class WeatherApp {
     }
 
     displayWeather(weatherData, forecastData) {
-        // Hide welcome message and error
+        // Hide welcome message and errors
         this.welcomeMessage.classList.add('hidden');
         this.error.classList.add('hidden');
         
         // Show weather display
         this.weatherDisplay.classList.remove('hidden');
         
-        // Update current weather
+        // Update all sections
         this.updateCurrentWeather(weatherData);
-        
-        // Update forecast
+        this.updateHourlyForecast(forecastData); // update
         this.updateForecast(forecastData);
     }
 
     updateCurrentWeather(data) {
-        // City and date
+        // Update city name and date
         this.cityName.textContent = `${data.name}, ${data.sys.country}`;
         this.weatherDate.textContent = this.formatDate(new Date());
         
-        // Weather icon
+        // Update weather icon
         const iconCode = data.weather[0].icon;
         this.weatherIcon.src = `https://openweathermap.org/img/wn/${iconCode}@4x.png`;
         this.weatherIcon.alt = data.weather[0].description;
         
-        // Temperature
+        // Update temperature
         this.temperature.textContent = Math.round(data.main.temp);
         this.unit.textContent = this.currentUnit === 'metric' ? '°C' : '°F';
         
-        // Description
+        // Update description
         this.description.textContent = data.weather[0].description;
         this.feelsLike.textContent = `Feels like ${Math.round(data.main.feels_like)}${this.currentUnit === 'metric' ? '°C' : '°F'}`;
         
-        // Details
+        // Update weather details
         this.humidity.textContent = `${data.main.humidity}%`;
         this.windSpeed.textContent = `${data.wind.speed} ${this.currentUnit === 'metric' ? 'm/s' : 'mph'}`;
         this.pressure.textContent = `${data.main.pressure} hPa`;
         this.visibility.textContent = `${(data.visibility / 1000).toFixed(1)} km`;
     }
 
+    updateHourlyForecast(data) {
+        // Clear previous hourly forecast
+        this.hourlyForecast.innerHTML = '';
+    
+        // show the next 24 hours (8 entries)
+        const hourlyData = data.list.slice(0, 8);
+        
+        hourlyData.forEach(hour => {
+            // Create card for each hour
+            const hourCard = this.createHourlyCard(hour);
+            this.hourlyForecast.appendChild(hourCard);
+        });
+    }
+
+    createHourlyCard(data) {
+        // Get time from the data
+        const date = new Date(data.dt * 1000);
+        const time = this.formatTime(date);
+        
+        // Create new div element
+        const card = document.createElement('div');
+        card.className = 'hourly-card';
+        
+        // Fill with HTML content
+        card.innerHTML = `
+            <p class="hourly-time">${time}</p>
+            <img 
+                src="https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png" 
+                alt="${data.weather[0].description}"
+                class="hourly-icon"
+            >
+            <p class="hourly-temp">${Math.round(data.main.temp)}${this.currentUnit === 'metric' ? '°C' : '°F'}</p>
+            <p class="hourly-desc">${data.weather[0].description}</p>
+        `;
+        
+        return card;
+    }
+
     updateForecast(data) {
         // Clear previous forecast
         this.forecast.innerHTML = '';
         
-        // Get one forecast per day (at 12:00)
+        // Get one forecast per day
         const dailyForecasts = data.list.filter(item => 
             item.dt_txt.includes('12:00:00')
         ).slice(0, 5);
@@ -253,66 +332,71 @@ class WeatherApp {
     }
 
     toggleUnit() {
-        // Toggle between metric and imperial
+        // Switch between Celsius and Fahrenheit
         this.currentUnit = this.currentUnit === 'metric' ? 'imperial' : 'metric';
         
         // Update button text
         this.unitToggle.textContent = this.currentUnit === 'metric' ? '°C' : '°F';
         
-        // If we have current weather data, re-fetch with new unit
+        // If weather data available, refresh with new unit
         if (this.currentWeatherData) {
             const { coord } = this.currentWeatherData;
             this.fetchWeatherByCoords(coord.lat, coord.lon);
         }
     }
 
-    // Recent Searches Management
     addToRecentSearches(city) {
-        // Remove if already exists
+        // Remove if exists
         this.recentSearches = this.recentSearches.filter(
             item => item.toLowerCase() !== city.toLowerCase()
         );
         
-        // Add to beginning
+        // Add to the beginning
         this.recentSearches.unshift(city);
         
-        // Keep only 5 recent searches
-        this.recentSearches = this.recentSearches.slice(0, 5);
+        // Keep 7 recent searches
+        this.recentSearches = this.recentSearches.slice(0, 7);
         
-        // Save to localStorage
+        // Save to browser storage
         this.saveRecentSearches();
         
-        // Update UI
+        // Update the display
         this.renderRecentSearches();
     }
 
     renderRecentSearches() {
+        // Clear the list
         this.recentList.innerHTML = '';
         
+        // If no recent searches, do nothing
         if (this.recentSearches.length === 0) return;
         
+        // Create button for each recent search
         this.recentSearches.forEach(city => {
             const item = document.createElement('span');
             item.className = 'recent-item';
             item.textContent = city;
+            
             item.addEventListener('click', () => {
                 this.cityInput.value = city;
                 this.handleSearch();
             });
+            
             this.recentList.appendChild(item);
         });
     }
 
     saveRecentSearches() {
+        // Save to browser storage
         localStorage.setItem('weatherRecentSearches', JSON.stringify(this.recentSearches));
     }
 
     loadRecentSearches() {
+        // Load from browser storage
         const saved = localStorage.getItem('weatherRecentSearches');
         return saved ? JSON.parse(saved) : [];
     }
 
-    // UI State Management
     showLoading() {
         this.loading.classList.remove('hidden');
         this.error.classList.add('hidden');
@@ -331,8 +415,8 @@ class WeatherApp {
         this.weatherDisplay.classList.add('hidden');
     }
 
-    // Utility Functions
     formatDate(date) {
+    
         const options = { 
             weekday: 'long', 
             year: 'numeric', 
@@ -344,18 +428,28 @@ class WeatherApp {
         return date.toLocaleDateString('en-US', options);
     }
 
+    formatTime(date) {
+        
+        return date.toLocaleTimeString('en-US', { 
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true 
+        });
+    }
+
     formatShortDate(date) {
+    
         const options = { month: 'short', day: 'numeric' };
         return date.toLocaleDateString('en-US', options);
     }
 
     getDayName(date) {
+        
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         return days[date.getDay()];
     }
 }
 
-// Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.weatherApp = new WeatherApp();
 });
